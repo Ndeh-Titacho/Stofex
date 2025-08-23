@@ -5,8 +5,10 @@ import Navbar from "../../components/Layout/Navbar";
 import axios from "axios";
 import GlobalCrypto from "./components/GlobalCrypto";
 import { TrendingUp,ChartNoAxesCombined,TrendingDown   } from "lucide-react";
+import CoinsList from "./components/CoinsList";
+import StockList from "./components/StockList";
 
-interface Coin {
+export interface Coin {
   id: string;
   name: string;
   symbol: string;
@@ -14,6 +16,8 @@ interface Coin {
   current_price: number;
   market_cap: number;
   total_supply: number;
+  price_change_percentage_24h: number;
+  total_volume: number;
 }
 
 interface TimeSeriesData {
@@ -54,14 +58,32 @@ export interface GlobalMarketData {
   };
 }
 
+export interface Stocks {
+     "symbol": string
+     "timestamp": Date,
+      "open": number,
+      "high": number,
+      "low": number,
+      "close": number,
+       "volume": number,
+      "previous_close": number,
+      "change": number,
+      "change_percent": number,
+      "extended_hours_quote": number,
+      "extended_hours_change": number,
+      "extended_hours_change_percent": number
+  }
+
+
 const StofexDashboard = () => {
   const [isDark, setIsDark] = useState<boolean>(true);
   const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [coins, setCoins] = useState<Coin[]>([]);
   const [stocks, setStocks] = useState<ApiData | null>(null);
-  const [globalData, setGlobalData] =
-    useState<GlobalMarketData | null>(null);
+  const [globalData, setGlobalData] = useState<GlobalMarketData | null>(null);
+  const [coinsList, setCoinsList] = useState<Coin[]>([]);
+  const [stocksList, setStocksList] = useState<Stocks[]>([]);
 
   useEffect(() => {
     const fetchGlobalData = async () => {
@@ -81,7 +103,7 @@ const StofexDashboard = () => {
 
     fetchGlobalData();
 
-    document.body.style.backgroundColor = isDark ? '#0e131c' : 'rgb(243 244 246)';
+    document.body.style.backgroundColor = isDark ? 'rgb(24, 24, 27)' : 'rgb(243 244 246)';
   }, [isDark]);
 
   return (
@@ -106,8 +128,8 @@ const StofexDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
 
             {/* Active cryptocurrencies */}
-            <div className="border p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
-              <div className="flex gap-4">
+            <div className="border border-gray-200 p-8 rounded-xl shadow-md dark:bg-[#1f2633] bg-white">
+              <div className="flex justify-center gap-4">
                 <span className="text-blue-600"><TrendingUp/></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Active Cryptocurrencies</h3>
               </div>
@@ -116,8 +138,8 @@ const StofexDashboard = () => {
             </div>
             
             {/* Upcoming ICOs */}
-            <div className="border p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
-              <div className="flex gap-4">
+            <div className="border border-gray-200 p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
+              <div className="flex justify-center gap-4">
                 <span className="text-amber-600"><ChartNoAxesCombined /></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Upcoming ICOs</h3>
               </div>
@@ -125,8 +147,8 @@ const StofexDashboard = () => {
             </div>
 
             {/* Ongoing ICOs */}
-            <div className="border p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
-              <div className="flex gap-4">
+            <div className="border border-gray-200  p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
+              <div className="flex justify-center gap-4">
                 <span className="text-blue-600"><ChartNoAxesCombined /></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Ongoing ICOs</h3>
               </div>
@@ -134,8 +156,8 @@ const StofexDashboard = () => {
             </div>
 
             {/* Ended ICOs */}
-            <div className="border p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
-              <div className="flex gap-4">
+            <div className="border border-gray-200 p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
+              <div className="flex justify-center gap-4">
                 <span className="text-red-600"><TrendingDown /></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Ended ICOs</h3>
               </div>
@@ -156,7 +178,11 @@ const StofexDashboard = () => {
 
       {/* Global market cap and total volume */}
 
-      <GlobalCrypto isLoading={isLoading} globalData={globalData} />
+      <CoinsList coinsList={coinsList} setCoinsList={setCoinsList} isLoading={isLoading} setIsLoading={setIsLoading} />
+
+      <StockList stocksList={stocksList} setStocksList={setStocksList} isLoading={isLoading} setIsLoading={setIsLoading} />
+
+   
     </div>
   );
 };

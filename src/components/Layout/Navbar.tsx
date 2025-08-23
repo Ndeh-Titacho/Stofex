@@ -48,7 +48,7 @@ const Navbar = ({
       setCoins(data)
       console.log(data)
 
-      const response1: any = await axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${inputValue}&outputsize=full&apikey=${alphavantageApiKey}`)
+      const response1: any = await axios.get(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${inputValue}&apikey=${alphavantageApiKey}`)
       const data1 = response1.data
       setStocks(data1)
       console.log(data1)
@@ -79,7 +79,7 @@ const Navbar = ({
         <input value={inputValue} onChange={(e) => handleInputChange(e)} onKeyDown={(e) => e.key === 'Enter' && fetchData()} placeholder='Search stocks and cryptocurrencies' className='h-12 w-xs text-sm md:w-md rounded-md text-black dark:text-white p-2 focus:outline-none border border-gray-200' type="text" name="search" id="Search" />
       </div>
       <div className={` ${isDark ? 'text-white' : 'text-black'}`}>
-        <button onClick={toggleDarkMode}>
+        <button onClick={toggleDarkMode} className='border rounded-sm p-2'>
           { isDark ? <Sun/> : <Moon/>}
         </button>
         
