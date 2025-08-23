@@ -3,6 +3,8 @@ import { Moon, Sun } from 'lucide-react'
 import axios from 'axios'
 
 
+
+
 const Navbar = ({ 
   isLoading,
   setIsLoading, 
@@ -10,7 +12,8 @@ const Navbar = ({
   setInputValue, 
   isDark, 
   setIsDark, 
-  setCoins
+  setCoins,
+  setStocks
 } : { 
   isLoading: boolean, 
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, 
@@ -18,7 +21,8 @@ const Navbar = ({
   setInputValue: React.Dispatch<React.SetStateAction<string>>,
   isDark: boolean, 
   setIsDark: React.Dispatch<React.SetStateAction<boolean>>,
-  setCoins: React.Dispatch<React.SetStateAction<any[]>>
+  setCoins: React.Dispatch<React.SetStateAction<any[]>>,
+  setStocks: React.Dispatch<React.SetStateAction<any |null[]>>
 }) => {
 
 
@@ -36,10 +40,16 @@ const Navbar = ({
 
   const fetchData = async () => {
     try {
-      const response1 = await axios.get(`https://api.coingecko.com/api/v3/search?query=${inputValue}`)
-      const data = response1.data.coins
+      const response = await axios.get(`https://api.coingecko.com/api/v3/search?query=${inputValue}`)
+      const data = response.data.coins
       setCoins(data)
       console.log(data)
+
+      const response1: any = await axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${inputValue}&outputsize=full&apikey=${alphavantageApiKey}`)
+      const data1 = response1.data
+      setStocks(data1)
+      console.log(data1)
+
 
      
     } catch (error) {
