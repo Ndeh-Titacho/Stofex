@@ -12,6 +12,6 @@
     }
 
         @theme inline {
-      --color-background: hsl(var(--background));
+      --color-background: #0e131c;
       
     }
