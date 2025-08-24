@@ -1,3 +1,17 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+    :root {
+      --background: 0 0% 100%; /* Example HSL values for white */
+      --foreground: 'hsl(var(--foreground))';   
+    }
+
+    .dark {
+      --background: 0 0% 3.9%; /* Example HSL values for dark mode background */
+    }
+
+        @theme inline {
+      --color-background: hsl(var(--background));
+      
+    }
