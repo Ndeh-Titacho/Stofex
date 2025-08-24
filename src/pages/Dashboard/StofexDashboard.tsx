@@ -7,6 +7,8 @@ import GlobalCrypto from "./components/GlobalCrypto";
 import { TrendingUp,ChartNoAxesCombined,TrendingDown   } from "lucide-react";
 import CoinsList from "./components/CoinsList";
 import StockList from "./components/StockList";
+import CoinsLineChart from "./components/CoinsLineChart";
+import StocksLineChart from "./StocksLineChart";
 
 export interface Coin {
   id: string;
@@ -20,7 +22,7 @@ export interface Coin {
   total_volume: number;
 }
 
-interface TimeSeriesData {
+export interface TimeSeriesData {
   "1. open": string;
   "2. high": string;
   "3. low": string;
@@ -28,16 +30,19 @@ interface TimeSeriesData {
   "5. volume": string;
 }
 
-interface ApiData {
-  "Meta Data": {
-    "1. Information": string;
-    "2. Symbol": string;
-    "3. Last Refreshed": string;
-    "4. Output Size": string;
-    "5. Time Zone": string;
-  };
-  "Time Series (Daily)": {
-    [date: string]: TimeSeriesData;
+export interface ApiData {
+
+  "Global Quote": {
+    "01. symbol": string;
+    "02. open": string;
+    "03. high": string;
+    "04. low": string;
+    "05. price": string;
+    "06. volume": string;
+    "07. latest trading day": string;
+    "08. previous close": string;
+    "09. change": string;
+    "10. change percent": string;
   };
 }
 
@@ -116,6 +121,8 @@ const StofexDashboard = () => {
         isDark={isDark}
         setIsDark={setIsDark}
         setCoins={setCoins}
+        coins={coins}
+        stocks={stocks}
         setStocks={setStocks}
       />
 
@@ -168,6 +175,11 @@ const StofexDashboard = () => {
       ) : (
         <div>Loading global market data...</div>
       )}
+<div className="">
+<CoinsLineChart isLoading={isLoading} setIsLoading={setIsLoading} />
+<StocksLineChart isLoading={isLoading} setIsLoading={setIsLoading} />
+</div>
+      
 
       <Cards
         inputValue={inputValue}

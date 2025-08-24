@@ -4,6 +4,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import Dashboard from './pages/Dashboard/StofexDashboard'
 import  About  from './pages/About'
 import Layout from './components/Layout/Layout';
+import DetailsPage from './pages/DetailsPage';
 
 
 
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Layout />} >
           <Route index element={<Dashboard />} />
           <Route path="/about" element={<About />} />
+          <Route path="/details/:id" element={<DetailsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           </Route>
 
