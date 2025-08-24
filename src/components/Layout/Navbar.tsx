@@ -2,6 +2,7 @@ import { Moon, Sun, TrendingUp  } from 'lucide-react'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
+import type { Coin } from '../../pages/Dashboard/StofexDashboard'
 
 
 
@@ -24,8 +25,8 @@ const Navbar = ({
   setInputValue: React.Dispatch<React.SetStateAction<string>>,
   isDark: boolean, 
   setIsDark: React.Dispatch<React.SetStateAction<boolean>>,
-  setCoins: React.Dispatch<React.SetStateAction<any[]>>,
-  coins: any[],
+  setCoins: React.Dispatch<React.SetStateAction<Coin[]>>,
+  coins: Coin[],
   stocks: any | null,
   setStocks: React.Dispatch<React.SetStateAction<any | null>>
 }) => {
@@ -69,8 +70,8 @@ const Navbar = ({
     setInputValue(event.target.value)
   }
 
-  const handleSelectionSuggestion = (suggestion: string) => {
-    navigate(`/details/${suggestion}`)
+  const handleSelectionSuggestion = (coin: Coin) => {
+    navigate(`/details/${coin.id}`, { state: {clickedCoin: coin}})
   }
 
   const fetchData = async () => {
@@ -118,49 +119,50 @@ const Navbar = ({
           name="search"
           id="Search"
         />
-        {/* Suggestion box positioned just below the input */}
-        <div className='absolute z-10 left-1/2 -translate-x-1/2 mt-2 w-[300px] md:w-md bg-white dark:bg-blue-950 border rounded shadow-lg h-96 overflow-y-auto'>
-          {isLoading && (<div className='loader p-4 text-center text-blue-600'>Loading...</div>)}
-          {!isLoading && coins.length === 0 && stocks === null && (
-            <div className='no-results p-4 text-center text-gray-500'>No results found</div>
-          )}
-          {!isLoading && coins.length > 0 && (
-            <div className='results'>
-              {coins.map((coin) => (
-                <div
-                  key={coin.id}
-                  onClick={() => handleSelectionSuggestion(coin.id)}
-                  className='result-item flex items-center gap-3 p-3 border-b last:border-b-0 hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors'
-                >
-                  <img src={coin.thumb || coin.image} alt={coin.name} className='w-8 h-8 rounded-full border' />
-                  <div>
-                    <h2 className='font-semibold text-base'>{coin.name}</h2>
-                    <p className='text-xs text-gray-500 dark:text-gray-400'>{coin.symbol.toUpperCase()}</p>
+        {/* Show suggestion box only when user is typing */}
+        {inputValue.length > 0 && (
+          <div className='absolute z-10 left-1/2 -translate-x-1/2 mt-2 w-[300px] md:w-md bg-white dark:bg-blue-950 border rounded shadow-lg h-96 overflow-y-auto'>
+            {isLoading && (<div className='loader p-4 text-center text-blue-600'>Loading...</div>)}
+            {!isLoading && coins.length === 0 && stocks === null && (
+              <div className='no-results p-4 text-center text-gray-500'>No results found</div>
+            )}
+            {!isLoading && coins.length > 0 && (
+              <div className='results'>
+                {coins.map((coin) => (
+                  <div
+                    key={coin.id}
+                    onClick={() => handleSelectionSuggestion(coin)}
+                    className='result-item flex items-center gap-3 p-3 border-b last:border-b-0 hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors'
+                  >
+                    <img src={coin.thumb || coin.image} alt={coin.name} className='w-8 h-8 rounded-full border' />
+                    <div>
+                      <h2 className='font-semibold text-base'>{coin.name}</h2>
+                      <p className='text-xs text-gray-500 dark:text-gray-400'>{coin.symbol.toUpperCase()}</p>
+                    </div>
+                    <span className='ml-auto text-xs bg-blue-200 dark:bg-blue-800 px-2 py-1 rounded'>{coin.market_cap_rank ? `Rank #${coin.market_cap_rank}` : ''}</span>
                   </div>
-                  <span className='ml-auto text-xs bg-blue-200 dark:bg-blue-800 px-2 py-1 rounded'>{coin.market_cap_rank ? `Rank #${coin.market_cap_rank}` : ''}</span>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
 
-          {/* Styled Stocks suggestion */}
-          {globalStocks && (
-            <div className='results p-3'>
-              <div className='flex items-center gap-3 border-b pb-3 mb-3'>
-                <span className='bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-3 py-2 rounded-full font-bold text-sm'>
-                  {globalStocks["01. symbol"] || inputValue}
-                </span>
-                <div>
-                  <h2 className='font-semibold text-base'>Stock Information</h2>
-                  <p className='text-xs text-gray-500 dark:text-gray-400'>
-                    Volume: <span className='font-bold text-blue-700 dark:text-blue-300'>${globalStocks["06. volume"]}</span>
-                  </p>
+            {/* Styled Stocks suggestion */}
+            {globalStocks && (
+              <div className='results p-3'>
+                <div className='flex items-center gap-3 border-b pb-3 mb-3'>
+                  <span className='bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-3 py-2 rounded-full font-bold text-sm'>
+                    {globalStocks["01. symbol"] || inputValue}
+                  </span>
+                  <div>
+                    <h2 className='font-semibold text-base'>Stock Information</h2>
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      Volume: <span className='font-bold text-blue-700 dark:text-blue-300'>${globalStocks["06. volume"]}</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-            
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
       <div className={` ${isDark ? 'text-white' : 'text-black'}`}>
         <button onClick={toggleDarkMode} className='border rounded-sm p-2'>
