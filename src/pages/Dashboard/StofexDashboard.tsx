@@ -82,8 +82,8 @@ export interface Stocks {
   }
 
 
-const StofexDashboard = () => {
-  const [isDark, setIsDark] = useState<boolean>(true);
+const StofexDashboard = ({ isDark, setIsDark } : { isDark: boolean, setIsDark: React.Dispatch<React.SetStateAction<boolean>> }) => {
+
   const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [coins, setCoins] = useState<Coin[]>([]);
@@ -91,17 +91,26 @@ const StofexDashboard = () => {
   const [globalData, setGlobalData] = useState<GlobalMarketData | null>(null);
   const [coinsList, setCoinsList] = useState<Coin[]>([]);
   const [stocksList, setStocksList] = useState<Stocks[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const coinForChart = 'bitcoin'
 
   useEffect(() => {
     const fetchGlobalData = async () => {
       try {
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
         const response = await axios.get(
           `https://api.coingecko.com/api/v3/global`
         );
         const data = response.data;
-        console.log("Global Market Data:", data);
         setGlobalData(data);
-      } catch (error) {
+        setError(null);
+      } catch (error: any) {
+        if (error.response && error.response.status === 429) {
+          setError("Rate limit exceeded. Please wait and try again.");
+        } else {
+          setError("Network error. Please check your connection.");
+        }
         console.error("Error fetching global market data:", error);
       } finally {
         setIsLoading(false);
@@ -110,11 +119,17 @@ const StofexDashboard = () => {
 
     fetchGlobalData();
 
-    document.body.style.backgroundColor = isDark ? 'rgb(24, 24, 27)' : 'rgb(243 244 246)';
+    // document.body.style.backgroundColor = isDark ? 'rgb(24, 24, 27)' : 'rgb(243 244 246)';
   }, [isDark]);
 
   return (
-    <div className={` ${isDark ? "dark" : " "} text-xl`}>
+    <div
+      className={`min-h-screen ${
+        isDark
+          ? "bg-gradient-to-br from-[#18181b] via-[#23263a] to-[#1a2236] text-slate-200"
+          : "bg-gradient-to-br from-blue-50 via-white to-blue-100 text-black"
+      } text-base transition-colors duration-300`}
+    >
       <Navbar
         isLoading={isLoading}
         setIsLoading={setIsLoading}
@@ -129,15 +144,15 @@ const StofexDashboard = () => {
       />
 
       {/* Global market data */}
-
       {globalData && globalData.data ? (
-        <div className="p-4 dark:text-white text-black ">
-        
-          {/* Grid templates */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
-
+        <div className="p-2 md:p-4 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Active cryptocurrencies */}
-            <div className="border border-gray-200 p-8 rounded-xl shadow-md dark:bg-[#1f2633] bg-white">
+            <div className={`border p-4 md:p-8 rounded-xl shadow-md flex flex-col items-center ${
+              isDark
+                ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]"
+                : "bg-white border-gray-200"
+            }`}>
               <div className="flex justify-center gap-4">
                 <span className="text-blue-600"><TrendingUp/></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Active Cryptocurrencies</h3>
@@ -147,7 +162,11 @@ const StofexDashboard = () => {
             </div>
             
             {/* Upcoming ICOs */}
-            <div className="border border-gray-200 p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
+            <div className={`border p-4 md:p-8 rounded-xl shadow-sm flex flex-col items-center ${
+              isDark
+                ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]"
+                : "bg-white border-gray-200"
+            }`}>
               <div className="flex justify-center gap-4">
                 <span className="text-amber-600"><ChartNoAxesCombined /></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Upcoming ICOs</h3>
@@ -156,7 +175,11 @@ const StofexDashboard = () => {
             </div>
 
             {/* Ongoing ICOs */}
-            <div className="border border-gray-200  p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
+            <div className={`border p-4 md:p-8 rounded-xl shadow-sm flex flex-col items-center ${
+              isDark
+                ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]"
+                : "bg-white border-gray-200"
+            }`}>
               <div className="flex justify-center gap-4">
                 <span className="text-blue-600"><ChartNoAxesCombined /></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Ongoing ICOs</h3>
@@ -165,7 +188,11 @@ const StofexDashboard = () => {
             </div>
 
             {/* Ended ICOs */}
-            <div className="border border-gray-200 p-8 rounded-xl shadow-sm dark:bg-[#1f2633] bg-white">
+            <div className={`border p-4 md:p-8 rounded-xl shadow-sm flex flex-col items-center ${
+              isDark
+                ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]"
+                : "bg-white border-gray-200"
+            }`}>
               <div className="flex justify-center gap-4">
                 <span className="text-red-600"><TrendingDown /></span>
                 <h3 className="text-xl mb-3  dark:text-slate-300 font-semibold ">Ended ICOs</h3>
@@ -175,28 +202,40 @@ const StofexDashboard = () => {
           </div>
         </div>
       ) : (
-        <div>Loading global market data...</div>
+        <div className="text-center py-8 text-lg font-medium">
+          Loading global market data...
+        </div>
       )}
-<div className="">
-<CoinsLineChart isLoading={isLoading} setIsLoading={setIsLoading} />
-<StocksLineChart isLoading={isLoading} setIsLoading={setIsLoading} />
-</div>
-      
 
-      <Cards
-        inputValue={inputValue}
-        isLoading={isLoading}
-        coins={coins}
-        stocks={stocks}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 px-2 md:px-4 py-6 md:py-8">
+        <div className={`rounded-xl shadow-md border ${isDark ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]" : "bg-white border-gray-200"}`}>
+          <CoinsLineChart isLoading={isLoading} setIsLoading={setIsLoading} />
+        </div>
+        <div className={`rounded-xl shadow-md border ${isDark ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]" : "bg-white border-gray-200"}`}>
+          <StocksLineChart isLoading={isLoading} setIsLoading={setIsLoading} />
+        </div>
+      </div>
 
-      {/* Global market cap and total volume */}
+     
 
-      <CoinsList coinsList={coinsList} setCoinsList={setCoinsList} isLoading={isLoading} setIsLoading={setIsLoading} />
-
-      <StockList stocksList={stocksList} setStocksList={setStocksList} isLoading={isLoading} setIsLoading={setIsLoading} />
-
-   
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 px-2 md:px-4 pb-6 md:pb-8">
+        <div className={`rounded-xl shadow-md border ${isDark ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]" : "bg-white border-gray-200"}`}>
+          <CoinsList
+            coinsList={coinsList}
+            setCoinsList={setCoinsList}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
+        </div>
+        <div className={`rounded-xl shadow-md border ${isDark ? "bg-gradient-to-br from-[#23263a] to-[#1a2236] border-[#23263a]" : "bg-white border-gray-200"}`}>
+          <StockList
+            stocksList={stocksList}
+            setStocksList={setStocksList}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
+        </div>
+      </div>
     </div>
   );
 };
