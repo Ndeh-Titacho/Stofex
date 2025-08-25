@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router'
 import type { Coin } from './Dashboard/StofexDashboard'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import CoinsLineChart from './Dashboard/components/CoinsLineChart'
 import type { PriceData } from './Dashboard/components/CoinsLineChart'
 import type { ApexOptions } from 'apexcharts'
 import Chart from 'react-apexcharts'
@@ -36,7 +35,7 @@ interface coinData {
   market_data: MarketData
 }
 
-const DetailsPage = ({ isDark }: { isDark: boolean }) => {
+const DetailsPage = () => {
   const location = useLocation()
   const { clickedCoin } = location.state as { clickedCoin: Coin }
   const { id } = useParams<{ id: string }>()
