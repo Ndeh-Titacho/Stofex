@@ -140,7 +140,7 @@ const DetailsPage = ({ isDark }: { isDark: boolean }) => {
   const priceChangePercentage24hAed = data?.market_data?.price_change_percentage_24h_in_currency?.aed
 
   return (
-    <div className="min-h-screen dark bg-gradient-to-br from-blue-50 via-white to-blue-100 text-black dark:from-[#18181b] dark:via-[#23263a] dark:to-[#1a2236] dark:text-slate-200 py-8 px-2 transition-colors duration-300">
+    <div className="min-h-screen  bg-gradient-to-br from-blue-50 via-white to-blue-100 text-black dark:from-[#18181b] dark:via-[#23263a] dark:to-[#1a2236] dark:text-slate-200 py-8 px-2 transition-colors duration-300">
       <Link 
         to='/'
         className='text-blue-600 hover:underline'
