@@ -2,7 +2,7 @@ import { Moon, Sun, TrendingUp  } from 'lucide-react'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import type { Coin } from '../../pages/Dashboard/StofexDashboard'
+import type { ApiData, Coin, Stocks } from '../../pages/Dashboard/StofexDashboard'
 
 
 
@@ -72,6 +72,10 @@ const Navbar = ({
 
   const handleSelectionSuggestion = (coin: Coin) => {
     navigate(`/details/${coin.id}`, { state: {clickedCoin: coin}})
+  }
+
+  const handleSelectionSuggestionStocks = (stock: ApiData) => {
+    navigate(`/details/stocks/${stock["Global Quote"]["01. symbol"]}`, { state: { clickedStock: stock } })
   }
 
   const fetchData = async () => {
@@ -148,7 +152,7 @@ const Navbar = ({
             {/* Styled Stocks suggestion */}
             {globalStocks && (
               <div className='results p-3'>
-                <div className='flex items-center gap-3 border-b pb-3 mb-3'>
+                <div className='flex items-center gap-3 border-b pb-3 mb-3' onClick={() => handleSelectionSuggestionStocks(globalStocks)}>
                   <span className='bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-3 py-2 rounded-full font-bold text-sm'>
                     {globalStocks["01. symbol"] || inputValue}
                   </span>
@@ -194,14 +198,62 @@ const Navbar = ({
         </div>
       </div>
       {/* Lower nav */}
-      <div className='flex justify-center items-center'>
-        <input value={inputValue} onChange={(e) => handleInputChange(e)} onKeyDown={(e) => e.key === 'Enter' && fetchData()} placeholder='Search stocks and cryptocurrencies...' 
-        className='h-12 w-lg mx-4  text-[16px] md:w-md rounded-lg text-black dark:text-white pl-15 py-3 border border-gray-300  focus:outline-none 
-    focus:border-blue-500 
-    focus:ring-2 
-    focus:ring-blue-500 
-    focus:ring-opacity-50' type="text" name="search" id="Search" />
+      <div className='flex flex-col items-center relative'>
+        <input
+          value={inputValue}
+          onChange={(e) => handleInputChange(e)}
+          onKeyDown={(e) => e.key === 'Enter' && fetchData()}
+          placeholder='Search stocks and cryptocurrencies...'
+          className='h-12 w-full mx-4 text-[16px] md:w-md rounded-lg text-black dark:text-white pl-4 py-3 border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
+          type="text"
+          name="search"
+          id="Search"
+        />
 
+        {/* Show suggestion box only when user is typing */}
+        {inputValue.length > 0 && (
+          <div className='absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[95vw] max-w-md bg-white dark:bg-blue-950 border rounded shadow-lg h-80 overflow-y-auto z-20'>
+            {isLoading && (<div className='loader p-4 text-center text-blue-600'>Loading...</div>)}
+            {!isLoading && coins.length === 0 && stocks === null && (
+              <div className='no-results p-4 text-center text-gray-500'>No results found</div>
+            )}
+            {!isLoading && coins.length > 0 && (
+              <div className='results'>
+                {coins.map((coin) => (
+                  <div
+                    key={coin.id}
+                    onClick={() => handleSelectionSuggestion(coin)}
+                    className='result-item flex items-center gap-3 p-3 border-b last:border-b-0 hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors'
+                  >
+                    <img src={coin.thumb || coin.image} alt={coin.name} className='w-8 h-8 rounded-full border' />
+                    <div>
+                      <h2 className='font-semibold text-base'>{coin.name}</h2>
+                      <p className='text-xs text-gray-500 dark:text-gray-400'>{coin.symbol.toUpperCase()}</p>
+                    </div>
+                    <span className='ml-auto text-xs bg-blue-200 dark:bg-blue-800 px-2 py-1 rounded'>{coin.market_cap_rank ? `Rank #${coin.market_cap_rank}` : ''}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Styled Stocks suggestion */}
+            {globalStocks && (
+              <div className='results p-3'>
+                <div className='flex items-center gap-3 border-b pb-3 mb-3'>
+                  <span className='bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-3 py-2 rounded-full font-bold text-sm'>
+                    {globalStocks["01. symbol"] || inputValue}
+                  </span>
+                  <div>
+                    <h2 className='font-semibold text-base'>Stock Information</h2>
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      Volume: <span className='font-bold text-blue-700 dark:text-blue-300'>${globalStocks["06. volume"]}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
     </>

@@ -3,6 +3,11 @@ import { useLocation, useParams } from 'react-router'
 import type { Coin } from './Dashboard/StofexDashboard'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import CoinsLineChart from './Dashboard/components/CoinsLineChart'
+import type { PriceData } from './Dashboard/components/CoinsLineChart'
+import type { ApexOptions } from 'apexcharts'
+import Chart from 'react-apexcharts'
+
 
 interface Links {
   homepage: string[]
@@ -31,23 +36,94 @@ interface coinData {
   market_data: MarketData
 }
 
-const DetailsPage = () => {
+const DetailsPage = ({ isDark }: { isDark: boolean }) => {
   const location = useLocation()
   const { clickedCoin } = location.state as { clickedCoin: Coin }
   const { id } = useParams<{ id: string }>()
+  
 
   const [data, setData] = useState<coinData>()
-  const [loading, setLoading] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [priceData, setPriceData] = useState<PriceData[]>([])
+    const [error,setError] = useState<string | null>(null)
+
+  /*  ApexCharts Data */
+  
+  const [series, setSeries] = useState<ApexOptions["series"]>([])
+  const [options, setOptions] = useState<ApexOptions>({
+    chart: { type: "line", height: 350, dropShadow: { enabled: true, blur: 10, opacity: 0.2 } },
+    stroke: { curve: "straight" },
+    grid: { row: { colors: ["#e0e0e0", "#ffffff"], opacity: 0.5, } },
+    xaxis: { categories: [] },
+    yaxis: { labels: { formatter: (value) => `$${value}` } },
+    tooltip: { x: { format: "dd MMM yyyy" } },
+  })
+
+  // Update chart data when priceData changes
+  useEffect(() => {
+    setSeries([
+      {
+        name: "Price",
+        data: priceData.map(data => data.price),
+      },
+    ])
+    setOptions(prev => ({
+      ...prev,
+      xaxis: {
+        ...prev.xaxis,
+        categories: priceData.map(data =>
+          new Date(data.timestamp).toLocaleDateString()
+        ),
+      },
+    }))
+  }, [priceData])
+
+  const coinId = clickedCoin.id
+  const vsCurrency = "usd"
+  const days = 7
+
+    const fetchChartsData  = async() => {
+      try {
+          setIsLoading(true)
+          await new Promise(resolve => setTimeout(resolve, 1000))
+            const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${vsCurrency}&days=${days}`)
+          if(!response.ok ) {
+            if(response.status === 429){
+              setError("Rate limit exceeded, please try again later.")
+            } else {
+              setError("Failed to fetch chart data")
+            }
+            return 
+          }
+            const data = await response.json()
+      console.log("Chart data:", data)
+      const prices = data.prices.map((price: [number, number]) => ({
+        price: price[1],
+        timestamp: price[0]
+      }))
+      setPriceData(prices)
+      } catch (error) {
+        setError("Network error, please check you connection.")
+          console.error("Error fetching chart data:", error)
+      } finally {
+          setIsLoading(false)
+      }
+    
+    }
+  
+    useEffect(() => {
+      fetchChartsData()
+    }, [coinId, vsCurrency, days])
 
   const fetchDetails = async () => {
     try {
-      setLoading(true)
+      setIsLoading(true)
       const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`)
       setData(response.data)
     } catch (error) {
       console.error(`Error fetching details about ${id}`, error)
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -64,13 +140,13 @@ const DetailsPage = () => {
   const priceChangePercentage24hAed = data?.market_data?.price_change_percentage_24h_in_currency?.aed
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-blue-900 dark:to-blue-800 py-10 px-4">
-        <Link 
+    <div className="min-h-screen dark bg-gradient-to-br from-blue-50 via-white to-blue-100 text-black dark:from-[#18181b] dark:via-[#23263a] dark:to-[#1a2236] dark:text-slate-200 py-8 px-2 transition-colors duration-300">
+      <Link 
         to='/'
         className='text-blue-600 hover:underline'
         >Back to Dashboard</Link>
-      <div className="max-w-3xl mx-auto bg-white dark:bg-blue-950 rounded-xl shadow-lg p-8">
-        {loading ? (
+      <div className="max-w-2xl mx-auto bg-white text-black border-gray-200 dark:bg-gradient-to-br dark:from-[#23263a] dark:to-[#1a2236] dark:text-slate-200 dark:border-[#23263a] rounded-xl shadow-lg p-4 md:p-6 border transition-colors duration-300">
+        {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
             <span className="text-blue-600 font-semibold">Loading details...</span>
@@ -104,6 +180,12 @@ const DetailsPage = () => {
                 <p className="text-gray-400">No description available.</p>
               )}
             </div>
+
+           <div className='mx-5'>
+                <h2>Coins Line Chart (7 Days)</h2>
+                {error && <div className='text-red-500 mb-2'>{error}</div>}
+                <Chart options={options} series={series} type="line" height={350} />
+              </div>
 
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
