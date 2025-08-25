@@ -104,7 +104,7 @@ const Navbar = ({
     {/* Desktop Layout */}
     <div className={`${ isDark ? "dark" : " "} hidden top-0 dark:bg-blue-950 bg-white text-black w-full  h-20 md:flex justify-around items-center border-b border-slate-50`}>
       <div className=' text-foreground flex justify-end gap-4  dark:text-white'>
-        <span className='bg-blue-600 rounded-lg text-white'><TrendingUp/></span>
+        <span className='bg-blue-600 rounded-lg h-12 w-12 flex items-center justify-center text-white'><TrendingUp/></span>
         <div>
 <h1 className='text-2xl font-bold tracking-wider'>STOFX</h1>
 <p className='text-sm'>Enterprise Dashboard</p>
@@ -203,7 +203,7 @@ const Navbar = ({
           onChange={(e) => handleInputChange(e)}
           onKeyDown={(e) => e.key === 'Enter' && fetchData()}
           placeholder='Search stocks and cryptocurrencies...'
-          className='h-12 w-full mx-4 text-[16px] md:w-md rounded-lg text-black dark:text-white pl-4 py-3 border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
+          className='h-12 w-96 mx-4 text-[16px] md:w-md rounded-lg text-black dark:text-white pl-4 py-3 border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
           type="text"
           name="search"
           id="Search"
