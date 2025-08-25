@@ -17,9 +17,11 @@ export interface Coin {
   image: string;
   current_price: number;
   market_cap: number;
+  market_cap_rank: number;
   total_supply: number;
   price_change_percentage_24h: number;
   total_volume: number;
+  thumb: string;
 }
 
 export interface TimeSeriesData {
