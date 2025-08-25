@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router'
 import type { Coin } from './Dashboard/StofexDashboard'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import CoinsLineChart from './Dashboard/components/CoinsLineChart'
 import type { PriceData } from './Dashboard/components/CoinsLineChart'
 import type { ApexOptions } from 'apexcharts'
 import Chart from 'react-apexcharts'
@@ -36,7 +35,7 @@ interface coinData {
   market_data: MarketData
 }
 
-const DetailsPage = ({ isDark }: { isDark: boolean }) => {
+const DetailsPage = () => {
   const location = useLocation()
   const { clickedCoin } = location.state as { clickedCoin: Coin }
   const { id } = useParams<{ id: string }>()
@@ -140,7 +139,7 @@ const DetailsPage = ({ isDark }: { isDark: boolean }) => {
   const priceChangePercentage24hAed = data?.market_data?.price_change_percentage_24h_in_currency?.aed
 
   return (
-    <div className="min-h-screen dark bg-gradient-to-br from-blue-50 via-white to-blue-100 text-black dark:from-[#18181b] dark:via-[#23263a] dark:to-[#1a2236] dark:text-slate-200 py-8 px-2 transition-colors duration-300">
+    <div className="min-h-screen  bg-gradient-to-br from-blue-50 via-white to-blue-100 text-black dark:from-[#18181b] dark:via-[#23263a] dark:to-[#1a2236] dark:text-slate-200 py-8 px-2 transition-colors duration-300">
       <Link 
         to='/'
         className='text-blue-600 hover:underline'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useLocation, useParams } from 'react-router'
 import type { ApiData, Stocks } from '../StofexDashboard'
-import axios from 'axios'
+
 
 const DetailsPageStocks = ( ) => {
 

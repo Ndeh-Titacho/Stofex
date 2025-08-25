@@ -2,7 +2,7 @@ import { Moon, Sun, TrendingUp  } from 'lucide-react'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import type { ApiData, Coin, Stocks } from '../../pages/Dashboard/StofexDashboard'
+import type { ApiData, Coin, } from '../../pages/Dashboard/StofexDashboard'
 
 
 
@@ -34,7 +34,6 @@ const Navbar = ({
 
 
   const alphavantageApiKey = import.meta.env.VITE_ALPHA_VANTAGE_API
-  const coingeckoApiKey = import.meta.env.VITE_COIN_GECKO_API
   const navigate = useNavigate()
 
   //  // Safely get dailyData if stocks and time series exist

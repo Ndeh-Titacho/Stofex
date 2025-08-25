@@ -21,7 +21,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Layout />} >
           <Route index element={<Dashboard isDark={isDark} setIsDark={setIsDark} />} />
           <Route path="/about" element={<About />} />
-          <Route path="/details/:id" element={<DetailsPage isDark={isDark}  />} />
+          <Route path="/details/:id" element={<DetailsPage  />} />
           <Route path="/details/stocks/:symbol" element={<DetailsPageStocks />} />
           <Route path="/dashboard" element={<Dashboard isDark={isDark} setIsDark={setIsDark} />} />
           </Route>
